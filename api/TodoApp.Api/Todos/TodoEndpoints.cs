@@ -4,7 +4,7 @@ public static class TodoEndpoints
 {
     public static void MapTodoEndpoints(this WebApplication app)
     {
-        var todoGroup = app.MapGroup("/todos");
+        var todoGroup = app.MapGroup("/api/todos");
 
         todoGroup.MapGet("/", async (ITodoRepository repository) =>
         {
@@ -22,11 +22,15 @@ public static class TodoEndpoints
         {
             if (string.IsNullOrWhiteSpace(request.Title) || request.Title.Length > 200)
             {
-                return Results.BadRequest("Title is required and must be 200 characters or fewer.");
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["Title"] = ["Title is required and must be 200 characters or fewer."],
+                });
             }
+
             var item = TodoItem.Create(request.Title, clock);
             await repository.AddAsync(item);
-            return Results.Created($"/todos/{item.Id}", item);
+            return Results.Created($"/api/todos/{item.Id}", item);
         });
 
         todoGroup.MapDelete("/{id:guid}", async (Guid id, ITodoRepository repository) =>
