@@ -1,0 +1,32 @@
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  @let showErrors = submitted() && title.invalid;
+  <label for="title">Add a todo</label>
+  <input
+    #titleInput
+    id="title"
+    type="text"
+    formControlName="title"
+    placeholder="What needs doing?"
+  />
+  <button
+    type="submit"
+    [class.saving]="saving()"
+    [attr.aria-busy]="saving()"
+    (mousedown)="$event.preventDefault()"
+  >
+    @if (!saving()) {
+      Add
+    } @else {
+      Adding
+    }
+  </button>
+  @if (showErrors) {
+    <p>
+      @if (title.hasError('required') || title.hasError('blank')) {
+        Your todo needs a title.
+      } @else if (title.hasError('maxlength')) {
+        Keep your todo title to {{ titleMaxLength }} characters or fewer.
+      }
+    </p>
+  }
+</form>

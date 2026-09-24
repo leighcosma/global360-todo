@@ -1,0 +1,21 @@
+<header>
+  <h1>Todos</h1>
+</header>
+
+<app-todo-form />
+
+@if (store.error(); as message) {
+  <p>{{ message }}</p>
+}
+
+@if (store.loading()) {
+  <p>Loading…</p>
+} @else if (store.isEmpty()) {
+  <p>No todos yet. Add one above.</p>
+} @else {
+  <app-todo-list
+    [todos]="store.todos()"
+    [removing]="store.removing()"
+    (remove)="store.remove($event)"
+  />
+}

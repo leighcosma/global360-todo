@@ -1,0 +1,11 @@
+<ul>
+  @for (todo of todos(); track todo.id) {
+    <li>
+      <app-todo-item
+        [todo]="todo"
+        [removing]="removing().has(todo.id)"
+        (remove)="remove.emit(todo.id)"
+      />
+    </li>
+  }
+</ul>

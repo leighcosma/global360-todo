@@ -1,0 +1,8 @@
+<span>{{ todo().title }}</span>
+<button type="button" [disabled]="removing()" (click)="remove.emit()">
+  @if (removing()) {
+    Deleting
+  } @else {
+    Delete
+  }
+</button>
