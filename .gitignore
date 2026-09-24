@@ -1,0 +1,12 @@
+# Node / Angular
+node_modules/
+client/dist/
+client/.angular/
+
+# .NET
+bin/
+obj/
+
+# Editor/OS
+.vscode/
+.DS_Store
