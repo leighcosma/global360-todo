@@ -1,6 +1,6 @@
-<ul>
+<ul aria-label="Todos">
   @for (todo of todos(); track todo.id) {
-    <li>
+    <li class="tile" [animate.enter]="animate() ? 'todo-enter' : ''" animate.leave="todo-leave">
       <app-todo-item
         [todo]="todo"
         [removing]="removing().has(todo.id)"

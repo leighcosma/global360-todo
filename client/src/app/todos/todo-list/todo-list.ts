@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import {
+  afterNextRender,
+  ChangeDetectionStrategy,
+  Component,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 
 import { Todo } from '../models/todo';
 import { TodoItem } from './todo-item/todo-item';
@@ -14,4 +21,11 @@ export class TodoList {
   todos = input.required<readonly Todo[]>();
   removing = input<ReadonlySet<string>>(new Set());
   remove = output<string>();
+
+  // Items present on first render should not animate in
+  protected animate = signal(false);
+
+  constructor() {
+    afterNextRender(() => this.animate.set(true));
+  }
 }

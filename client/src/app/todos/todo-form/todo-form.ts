@@ -3,9 +3,11 @@ import {
   Component,
   ElementRef,
   inject,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { titleMaxLength } from '../models/todo';
@@ -22,7 +24,9 @@ import { notBlank } from './todo-form.logic';
 export class TodoForm {
   private store = inject(TodoStore);
 
-  protected titleInput = viewChild.required<ElementRef<HTMLInputElement>>('titleInput');
+  cancelled = output<void>();
+
+  private titleInput = viewChild.required<ElementRef<HTMLTextAreaElement>>('titleInput');
 
   protected form = new FormGroup({
     title: new FormControl('', {
@@ -34,6 +38,15 @@ export class TodoForm {
   protected saving = this.store.saving;
   protected submitted = signal(false);
 
+  constructor() {
+    // Errors only show for a submit attempt, editing clears them until the next one
+    this.title.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.submitted.set(false));
+  }
+
+  focus(): void {
+    this.titleInput().nativeElement.focus();
+  }
+
   protected get title(): FormControl<string> {
     return this.form.controls.title;
   }
@@ -44,7 +57,7 @@ export class TodoForm {
     }
 
     this.submitted.set(true);
-    this.focusTitle();
+    this.focus();
     if (this.form.invalid) {
       return;
     }
@@ -52,11 +65,10 @@ export class TodoForm {
     const added = await this.store.add(this.title.value.trim());
     if (added) {
       this.form.reset();
-      this.submitted.set(false);
     }
   }
 
-  private focusTitle(): void {
-    this.titleInput().nativeElement.focus();
+  protected cancel(): void {
+    this.cancelled.emit();
   }
 }

@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-lg);
+  overflow-wrap: anywhere;
+}
+
+button {
+  flex-shrink: 0;
+  color: var(--fg);
+  background: transparent;
+
+  &.busy {
+    color: var(--danger);
+  }
+
+  &:focus-visible {
+    color: var(--on-accent);
+    background: var(--danger);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      color: var(--on-accent);
+      background: var(--danger);
+    }
+  }
+}

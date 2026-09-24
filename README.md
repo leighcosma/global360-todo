@@ -28,4 +28,8 @@ npm start
 
 The app is served at http://localhost:4200.
 
-To access the app from another device on your network, run npx ng serve --host 0.0.0.0 instead of npm start.
+To access the app from another device on your network, run `npx ng serve --host 0.0.0.0` instead of `npm start`.
+
+## Third-party references
+
+- Icons from [Lucide](https://lucide.dev) (ISC licence)

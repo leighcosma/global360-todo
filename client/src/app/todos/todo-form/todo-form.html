@@ -1,32 +1,88 @@
-<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+<form [formGroup]="form" (ngSubmit)="submit()" (keydown.escape)="cancel()" novalidate>
   @let showErrors = submitted() && title.invalid;
-  <label for="title">Add a todo</label>
-  <input
-    #titleInput
-    id="title"
-    type="text"
-    formControlName="title"
-    placeholder="What needs doing?"
-  />
-  <button
-    type="submit"
-    [class.saving]="saving()"
-    [attr.aria-busy]="saving()"
-    (mousedown)="$event.preventDefault()"
-  >
-    @if (!saving()) {
-      Add
-    } @else {
-      Adding
-    }
-  </button>
-  @if (showErrors) {
-    <p>
-      @if (title.hasError('required') || title.hasError('blank')) {
-        Your todo needs a title.
-      } @else if (title.hasError('maxlength')) {
-        Keep your todo title to {{ titleMaxLength }} characters or fewer.
+  <div class="header">
+    <label for="title" [class.visually-hidden]="showErrors">Add a todo</label>
+    <p id="title-error" class="error" role="alert">
+      @if (showErrors) {
+        @if (title.hasError('required') || title.hasError('blank')) {
+          Your todo needs a title
+        } @else if (title.hasError('maxlength')) {
+          Keep your todo title to {{ titleMaxLength }} characters or fewer
+        }
       }
     </p>
-  }
+  </div>
+  <div class="row">
+    <textarea
+      #titleInput
+      id="title"
+      rows="1"
+      formControlName="title"
+      autocomplete="off"
+      placeholder="What needs doing?"
+      [attr.aria-invalid]="showErrors ? 'true' : null"
+      [attr.aria-describedby]="showErrors ? 'title-error' : null"
+      (keydown.enter)="$event.preventDefault(); submit()"
+      (keydown.shift.enter)="$event.preventDefault()"
+    ></textarea>
+    <button
+      type="submit"
+      class="icon-button"
+      aria-label="Add todo"
+      [class.busy]="saving()"
+      [attr.aria-busy]="saving()"
+      (mousedown)="$event.preventDefault()"
+    >
+      @if (saving()) {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="spinner"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="spinner"
+        >
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+      } @else {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-plus preview-icon"
+        >
+          <path d="M5 12h14" />
+          <path d="M12 5v14" />
+        </svg>
+      }
+    </button>
+    <button type="button" class="icon-button cancel" aria-label="Cancel" (click)="cancel()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-x preview-icon"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    </button>
+  </div>
 </form>
