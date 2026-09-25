@@ -63,6 +63,36 @@ public class InMemoryTodoRepositoryTests
     }
 
     [Fact]
+    public async Task ExistsAsync_ReturnsTrue_WhenFound()
+    {
+        var item = TodoItem.Create("Write test", _clock);
+        await _repository.AddAsync(item);
+
+        var exists = await _repository.ExistsAsync(item.Title);
+
+        Assert.True(exists);
+    }
+
+    [Fact]
+    public async Task ExistsAsync_ReturnsFalse_WhenNotFound()
+    {
+        var exists = await _repository.ExistsAsync("Nonexistent title");
+
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public async Task ExistsAsync_IsCaseInsensitive()
+    {
+        var item = TodoItem.Create("Write test", _clock);
+        await _repository.AddAsync(item);
+
+        var exists = await _repository.ExistsAsync("write test");
+
+        Assert.True(exists);
+    }
+
+    [Fact]
     public async Task DeleteAsync_ReturnsTrue_WhenFound()
     {
         var item = TodoItem.Create("Write test", _clock);

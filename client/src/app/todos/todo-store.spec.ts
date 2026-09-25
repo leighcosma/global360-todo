@@ -40,7 +40,7 @@ describe('TodoStore', () => {
 
       await store.load();
 
-      expect(store.error()).toBe('Something went wrong. Please try again.');
+      expect(store.error()).toBe('Something went wrong');
       expect(store.todos()).toEqual([]);
     });
 
@@ -67,11 +67,12 @@ describe('TodoStore', () => {
       expect(store.saving()).toBe(false);
     });
 
-    it('should add the new todo to the list on success', async () => {
+    it('should add the new todo to the list and resolve ok on success', async () => {
       const expected = [...mockTodos, createTodo({ id: '4', title: 'Write a fourth test' })];
 
-      await store.add('Write a fourth test');
+      const result = await store.add('Write a fourth test');
 
+      expect(result).toEqual({ ok: true });
       expect(store.todos()).toEqual(expected);
     });
 
@@ -80,8 +81,8 @@ describe('TodoStore', () => {
 
       const result = await store.add('Write a fourth test');
 
-      expect(result).toBe(false);
-      expect(store.error()).toBe('Something went wrong. Please try again.');
+      expect(result).toEqual({ ok: false, inputError: null });
+      expect(store.error()).toBe('Something went wrong');
     });
 
     it('should clear error on success', async () => {
@@ -120,7 +121,7 @@ describe('TodoStore', () => {
 
       await store.remove('1');
 
-      expect(store.error()).toBe('Something went wrong. Please try again.');
+      expect(store.error()).toBe('Something went wrong');
       expect(store.todos()).toEqual(mockTodos);
     });
 

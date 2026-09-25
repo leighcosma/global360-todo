@@ -50,7 +50,7 @@ describe('TodoPage', () => {
 
     const alert = element.querySelector('[role="alert"]');
     expect(alert).not.toBeNull();
-    expect(alert?.textContent).toContain('Something went wrong. Please try again.');
+    expect(alert?.textContent).toContain('Something went wrong');
   });
 
   it('should open the form when the add button is clicked', async () => {

@@ -20,7 +20,9 @@ public static class TodoEndpoints
 
         todoGroup.MapPost("/", async (CreateTodoRequest request, ITodoRepository repository, TimeProvider clock) =>
         {
-            if (string.IsNullOrWhiteSpace(request.Title) || request.Title.Length > 200)
+            var title = request.Title.Trim();
+
+            if (string.IsNullOrWhiteSpace(title) || title.Length > 200)
             {
                 return Results.ValidationProblem(new Dictionary<string, string[]>
                 {
@@ -28,7 +30,16 @@ public static class TodoEndpoints
                 });
             }
 
-            var item = TodoItem.Create(request.Title, clock);
+            if (await repository.ExistsAsync(title))
+            {
+                return Results.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    ["Title"] = ["A todo with that title already exists."],
+                },
+                statusCode: StatusCodes.Status409Conflict);
+            }
+
+            var item = TodoItem.Create(title, clock);
             await repository.AddAsync(item);
             return Results.Created($"/api/todos/{item.Id}", item);
         });

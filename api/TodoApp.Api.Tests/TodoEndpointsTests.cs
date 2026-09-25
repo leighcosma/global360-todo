@@ -133,6 +133,20 @@ public sealed class TodoEndpointsTests : IDisposable
     }
 
     [Fact]
+    public async Task Create_ReturnsConflict_WhenTitleAlreadyExists()
+    {
+        var request = new CreateTodoRequest("Write test");
+        await _client.PostAsJsonAsync("/api/todos", request);
+
+        var response = await _client.PostAsJsonAsync("/api/todos", request);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<HttpValidationProblemDetails>();
+        Assert.NotNull(problem);
+        Assert.Contains("Title", problem.Errors.Keys);
+    }
+
+    [Fact]
     public async Task Delete_ReturnsNoContent_WhenFound()
     {
         var item = TodoItem.Create("Write test", _clock);

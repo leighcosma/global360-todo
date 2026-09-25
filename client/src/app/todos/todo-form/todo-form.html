@@ -1,10 +1,12 @@
 <form [formGroup]="form" (ngSubmit)="submit()" (keydown.escape)="cancel()" novalidate>
-  @let showErrors = submitted() && title.invalid;
+  @let showErrors = submitted() && (title.invalid || serverError());
   <div class="header">
     <label for="title" [class.visually-hidden]="showErrors">Add a todo</label>
     <p id="title-error" class="error" role="alert">
       @if (showErrors) {
-        @if (title.hasError('required') || title.hasError('blank')) {
+        @if (serverError(); as message) {
+          {{ message }}
+        } @else if (title.hasError('required') || title.hasError('blank')) {
           Your todo needs a title
         } @else if (title.hasError('maxlength')) {
           Keep your todo title to {{ titleMaxLength }} characters or fewer

@@ -25,6 +25,9 @@ public sealed class InMemoryTodoRepository : ITodoRepository
         return Task.CompletedTask;
     }
 
+    public Task<bool> ExistsAsync(string title) =>
+        Task.FromResult(_items.Values.Any(item => item.Title.Equals(title, StringComparison.OrdinalIgnoreCase)));
+
     public Task<bool> DeleteAsync(Guid id) =>
         Task.FromResult(_items.TryRemove(id, out _));
 }

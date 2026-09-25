@@ -37,10 +37,14 @@ export class TodoForm {
   protected titleMaxLength = titleMaxLength;
   protected saving = this.store.saving;
   protected submitted = signal(false);
+  protected serverError = signal<string | null>(null);
 
   constructor() {
     // Errors only show for a submit attempt, editing clears them until the next one
-    this.title.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.submitted.set(false));
+    this.title.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => {
+      this.submitted.set(false);
+      this.serverError.set(null);
+    });
   }
 
   focus(): void {
@@ -62,9 +66,11 @@ export class TodoForm {
       return;
     }
 
-    const added = await this.store.add(this.title.value.trim());
-    if (added) {
+    const result = await this.store.add(this.title.value.trim());
+    if (result.ok) {
       this.form.reset();
+    } else if (result.inputError) {
+      this.serverError.set(result.inputError);
     }
   }
 

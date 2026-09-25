@@ -5,6 +5,8 @@ import { firstValueFrom } from 'rxjs';
 import { Todo } from './models/todo';
 import { TodoApi } from './todo-api';
 
+export type AddResult = { ok: true } | { ok: false; inputError: string | null };
+
 @Injectable({ providedIn: 'root' })
 export class TodoStore {
   private api = inject(TodoApi);
@@ -35,18 +37,21 @@ export class TodoStore {
     }
   }
 
-  // Resolves true on success so the form knows when to clear itself
-  async add(title: string): Promise<boolean> {
+  // Input errors (400/409) go back to the form
+  async add(title: string): Promise<AddResult> {
     this.savingState.set(true);
     this.errorState.set(null);
 
     try {
       const todo = await firstValueFrom(this.api.create(title));
       this.todosState.update((todos) => [...todos, todo]);
-      return true;
+      return { ok: true };
     } catch (error) {
+      if (this.isInputError(error)) {
+        return { ok: false, inputError: messageOf(error) };
+      }
       this.errorState.set(messageOf(error));
-      return false;
+      return { ok: false, inputError: null };
     } finally {
       this.savingState.set(false);
     }
@@ -67,6 +72,10 @@ export class TodoStore {
     }
   }
 
+  private isInputError(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && (error.status === 400 || error.status === 409);
+  }
+
   private setRemoving(id: string, inFlight: boolean): void {
     this.removingState.update((ids) => {
       const next = new Set(ids);
@@ -83,15 +92,18 @@ export class TodoStore {
 function messageOf(error: unknown): string {
   if (error instanceof HttpErrorResponse) {
     if (error.status === 0) {
-      return 'Could not reach the server.';
+      return 'Could not reach the server';
     }
     if (error.status === 400) {
-      return 'That title is not valid.';
+      return 'That title is not valid';
     }
     if (error.status === 404) {
-      return 'That item no longer exists.';
+      return 'That item no longer exists';
+    }
+    if (error.status === 409) {
+      return 'A todo with that title already exists';
     }
   }
 
-  return 'Something went wrong. Please try again.';
+  return 'Something went wrong';
 }
