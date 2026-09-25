@@ -30,6 +30,23 @@ The app is served at http://localhost:4200.
 
 To access the app from another device on your network, run `npx ng serve --host 0.0.0.0` instead of `npm start`.
 
+## Tests and linting
+
+API:
+
+```sh
+cd api && dotnet test
+```
+
+Client:
+
+```sh
+cd client
+npx ng test --watch=false
+npx ng lint
+npx stylelint "src/**/*.scss"
+```
+
 ## Third-party references
 
 - Icons from [Lucide](https://lucide.dev) (ISC licence)
