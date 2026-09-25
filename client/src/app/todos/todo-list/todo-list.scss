@@ -24,12 +24,7 @@ li {
 }
 
 @keyframes todo-leave {
-  0% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  100% {
+  to {
     opacity: 0;
     transform: scale(0);
   }
