@@ -93,6 +93,21 @@ describe('TodoStore', () => {
 
       expect(store.error()).toBeNull();
     });
+
+    it.each([
+      [400, 'That title is not valid'],
+      [409, 'A todo with that title already exists'],
+    ])(
+      'should return an input error and not set the page error for a %i',
+      async (status, message) => {
+        api.create.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status })));
+
+        const result = await store.add('Write a fourth test');
+
+        expect(result).toEqual({ ok: false, inputError: message });
+        expect(store.error()).toBeNull();
+      },
+    );
   });
 
   describe('remove', () => {

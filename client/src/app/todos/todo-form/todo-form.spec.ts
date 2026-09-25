@@ -1,4 +1,6 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { throwError } from 'rxjs';
 
 import { titleMaxLength } from '../models/todo';
 import { TodoApi } from '../todo-api';
@@ -78,5 +80,20 @@ describe('TodoForm', () => {
 
     expect(api.create).toHaveBeenCalledWith(title);
     expect(textarea.value).toBe('');
+  });
+
+  it.each([
+    [400, 'That title is not valid'],
+    [409, 'A todo with that title already exists'],
+  ])('should display the input error and keep the title for %i', async (status, message) => {
+    api.create.mockReturnValueOnce(throwError(() => new HttpErrorResponse({ status })));
+    textarea.value = 'Write test';
+    textarea.dispatchEvent(new Event('input'));
+    await fixture.whenStable();
+
+    await submit();
+
+    expect(alertText()).toBe(message);
+    expect(textarea.value).toBe('Write test');
   });
 });
